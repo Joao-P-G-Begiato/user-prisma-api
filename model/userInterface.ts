@@ -1,6 +1,6 @@
 export default interface UserModel{
-    email: String
-    name: String
-    password: String
+    email: string
+    name: string
+    password: string
     address? : Array<string>
 }
