@@ -1,6 +1,5 @@
 const bcrypt = require ('bcrypt')
-
-class Cryptographer{
+export default  class Cryptographer{
     static async crypt(string : string): Promise<string>{
         const crypt = await bcrypt.hash(string, 10)
         return crypt
