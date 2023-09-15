@@ -12,8 +12,12 @@ datasource db {
 
 model Address {
   addressid Int @id @default(autoincrement())
-  street String 
+  street String
+  number String
+  city String
+  state String
   zipcode String
+  country String
   user User @relation(fields: [userid], references: [id])
   userid Int
 }
