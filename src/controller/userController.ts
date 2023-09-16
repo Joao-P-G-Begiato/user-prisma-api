@@ -10,12 +10,18 @@ export default class UserController{
             try{
                 const {user, address} = req.body
                 const {email, name, password} = user
-                if(ValidationUserInfo.emailVerify(email) && ValidationUserInfo.nameVerify(name) && ValidationUserInfo.passwordVeirfy(password)){
-                    const newPassword = await Cryptographer.crypt(user.password)
-                    user.password = newPassword
-                        dbConections.create(user, address);
+                const userExist = await dbConections.listUserByMail(user.email)
+                if(!userExist){
+                    if(ValidationUserInfo.emailVerify(email) && ValidationUserInfo.nameVerify(name) && ValidationUserInfo.passwordVeirfy(password)){
+                        const newPassword = await Cryptographer.crypt(user.password)
+                        user.password = newPassword
+                        await dbConections.create(user, address);
+                        res.status(201).json({message: "creation successful"})
+                    }else{
+                        throw new Error("Bad Request: check the requesition body")
+                    }
                 }else{
-                    throw new Error("Bad Request: check the requesition body")
+                    res.status(400).json({message: "Bad Request, a User with this e-mail already exist"})
                 }
             }catch(e : any){
                 res.status(400).json(e.message)
@@ -33,17 +39,43 @@ export default class UserController{
 
         app.get("/user/:id", async(req: any, res: any)=>{
             try{
-                const response = await dbConections.listUserById(req.params.id)
+                const userId = parseInt(req.params.id)
+                const response = await dbConections.listUserById(userId)
                 res.status(200).json(response)
             }catch{
                 res.status(404).json({message: "User not found"})
             }
         })
 
-        // app.patch("/user", async(req, res)=>{
+        app.patch("/user/:id", async(req : any, res : any)=>{
+            try{
+                const userId = parseInt(req.params.id)
+                const userValid = await dbConections.listUserById(userId)
+                if(userValid){
+                    const response = await dbConections.updateUser(userId, req.body)
+                    res.status(200).json({message: `User with the id ${req.params.id} was updated succefully`})
+                }else{
+                    res.status(404).json({message: "User not found"})
+                }
+            }catch(e){
+                res.status(400).json({message: "Something went wrong, try again later"})
+            }
+        })
 
-        // })
-
-
+        app.delete("/user/:id", async (req: any, res:any)=>{
+            const userId = parseInt(req.params.id)
+            try{
+                const userValid = await dbConections.listUserById(userId)
+                if(!userValid){
+                    res.status(404).json({message: `not found a user with id: ${userId}`})
+                }else{
+                    const response = await dbConections.deleteUser(userId)
+                    res.status(200).json(`success on delete user`)
+                }
+            }catch(e){
+                console.log(e)
+                res.status(400).json({message: `something went wrong, try again later`})
+            }
+        })
     }
 }
