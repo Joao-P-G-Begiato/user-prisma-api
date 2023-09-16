@@ -51,10 +51,35 @@ export default class dbConections{
         return user
     }
 
+    static async listUserByMail(userMail : string){
+        const prisma = new PrismaClient()
+        const user = await prisma.user.findUnique({
+            where:{
+                email : userMail
+            },
+        })
+        return user
+    }
+
     static async updateUser(userId : number, data: Object ){
         const prisma = new PrismaClient()
         const update = await prisma.user.update({
             data: data,
+            where: {
+                id : userId
+            }
+        })
+    }
+
+    static async deleteUser(userId : number){
+        const prisma = new PrismaClient()
+        const deleteAddress = await prisma.address.deleteMany({
+            where:{
+                userid : userId
+            }
+
+        })
+        const deletedUser = await prisma.user.delete({
             where: {
                 id : userId
             }
