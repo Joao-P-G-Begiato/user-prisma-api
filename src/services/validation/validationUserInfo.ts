@@ -2,7 +2,7 @@ export default class ValidationUserInfo{
     static emailVerify(email:string):boolean{
         const length = email.length
         const dotVerify = email.includes(".") && email.lastIndexOf(".") != length-1 
-        const atSignVerify = email.includes("@") && email.indexOf("@") < email.indexOf(".") && email.lastIndexOf("@") != length-1 && email.indexOf("@") > 1
+        const atSignVerify = email.includes("@") && email.indexOf("@") < email.lastIndexOf(".") && email.lastIndexOf("@") != length-1 && email.indexOf("@") > 1
         return length > 5 && dotVerify && atSignVerify
     }
     static nameVerify(name:string):boolean{

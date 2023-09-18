@@ -51,11 +51,21 @@ export default class UserController{
             try{
                 const userId = parseInt(req.params.id)
                 const userValid = await dbConections.listUserById(userId)
-                if(userValid){
-                    const response = await dbConections.updateUser(userId, req.body)
-                    res.status(200).json({message: `User with the id ${req.params.id} was updated succefully`})
+                const passwordExist = req.body.password ? ValidationUserInfo.passwordVeirfy(req.body.password) : true
+                const emailExist = req.body.email ? ValidationUserInfo.emailVerify(req.body.password) : true
+                const nameExist = req.body.name ? ValidationUserInfo.nameVerify(req.body.password) : true
+                if(req.body.password){
+                    req.body.password = await Cryptographer.crypt(req.body.password)
+                }
+                if(passwordExist && emailExist && nameExist){
+                    if(userValid){
+                        const response = await dbConections.updateUser(userId, req.body)
+                        res.status(200).json({message: `User with the id ${req.params.id} was updated succefully`})
+                    }else{
+                        res.status(404).json({message: "User not found"})
+                    }
                 }else{
-                    res.status(404).json({message: "User not found"})
+                    res.status(400).json({message: "Bad request, check the requisition body"})
                 }
             }catch(e){
                 res.status(400).json({message: "Something went wrong, try again later"})
