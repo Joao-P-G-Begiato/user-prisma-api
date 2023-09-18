@@ -17,7 +17,8 @@ export default class dbConections{
                         number: address.number,
                         state: address.state,
                         street: address.street,
-                        zipcode: address.zipcode
+                        zipcode: address.zipcode,
+                        active: 1
                     }
                 }
             }
@@ -86,4 +87,31 @@ export default class dbConections{
         })
     }
 
+    static async oldAddressDesactive(userId: number){
+        const prisma = new PrismaClient()
+        const desactiveOldAdress = await prisma.address.update({
+            data : {
+                active : 0
+            },
+            where : {
+                userid : userId,
+                active : 1
+            }
+        })
+    }
+
+    static async addressCreation(address : AddressModel, userId: number) {
+        const prisma = new PrismaClient()
+        const replaceOld = await this.oldAddressDesactive(userId)
+        const updateUser = await prisma.user.update({
+            where : {
+                id : userId
+            },
+            data : {
+                address : {
+                    create : Object.assign(address, {active: 1})
+                }
+            }
+        })
+    }
 }
