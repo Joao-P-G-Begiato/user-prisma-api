@@ -1,5 +1,5 @@
-import express = require("express")
-import cors = require("cors")
+import express = require ("express")
+import cors = require ("cors")
 import UserController from "./controller/userController"
 
 const app = express()
