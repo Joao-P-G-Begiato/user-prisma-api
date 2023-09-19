@@ -19,7 +19,7 @@ model Address {
   zipcode String
   country String
   user User  @relation(fields: [userid], references: [id]) 
-  userid Int @unique
+  userid Int
   active Int
 }
 
